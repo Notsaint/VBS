@@ -29,4 +29,3 @@ Wscript.Quit
 ' set WshNetwork = WScript.CreateObject("WScript.Network")
 ' set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
 ' strDomain = WshNetwork.User Domain
-
