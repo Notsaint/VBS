@@ -1,4 +1,5 @@
 ' Данный скрипт позволит вам узнать логин пользователя по имеющемуся у вас SID. В скрипт необходимо вписать интересующий вас SID.
+' http://www.kovanev.net/
 
 strComputer = "."
 Set objWMIService = GetObject("winmgmts:\\" & strComputer & "\root\cimv2")
