@@ -1,0 +1,24 @@
+' Скрипт, который "смотрит" в указанную вами папку и при наличии в ней файлов отправляет письмо с оповещением. 
+' Данный скрипт можно запускать шедулером с определенным интервалом и быть всегда в курсе поступления файлов в интересующую вас папку.
+' В данном скрипте необходимо указать свои данные в тех местах, где текст выделен красным цветом.
+
+Set filesys = CreateObject("Scripting.FileSystemObject")
+Set DataFolder = filesys.GetFolder("C:\foldername") 
+Set DataFiles = DataFolder.Files 
+NumberOfFiles = DataFiles.Count
+if NumberOfFiles > 0 then
+SendMail "You have new message(s)!", "There is " & NumberOfFiles & " message(s) for you!","senderuser@mail.address", "recipientuser@mail.address"
+end if
+Sub SendMail (strSub, strBody, strTo, strFrom)
+On Error Resume Next
+strSMTP = "mailserver name"
+set objEmail = CreateObject("CDO.Message")
+objEmail.From = strFrom
+objEmail.To = strTo
+objEmail.Subject = strSub
+objEmail.Textbody = strBody
+objEmail.Configuration.Fields.Item("http://schemas.microsoft.com/cdo/configuration/sendusing") = 2
+objEmail.Configuration.Fields.Item("http://schemas.microsoft.com/cdo/configuration/smtpserver") = strSMTP
+objEmail.Configuration.Fields.Update
+objEmail.Send
+End sub
