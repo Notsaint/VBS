@@ -1,0 +1,32 @@
+' Скрипт для разблокировки заблокированной учетной записи AD:
+
+On Error Resume Next
+strUser = "USERNAME"
+strDomain = "DOMAIN"
+Set objUser = GetObject("WinNT://"& strDomain &"/" & strUser & "")
+
+If Err.Number <> 0 Then
+  Wscript.Echo "Error " & Err.Number & " Неправильно указали имя пользователя или домен!" 
+  Wscript.Quit
+End If
+
+Err.Clear
+If objUser.IsAccountLocked = 0 Then
+  'Wscript.Echo "Пользователь " & UCase(strUser) & " не заблокирован" & " в " & UCase(strDomain)
+Else
+  objUser.IsAccountLocked = 0
+  objUser.SetInfo
+  If Err.number = 0 Then
+    'Wscript.Echo "Пользователь " & UCase(strName) & " был разблокирован" & " в " & UCase(strDomain)
+  Else
+    'Wscript.Echo "Ошибка при разблокировании" & UCase(strUser) & " в " & UCase(strDomain)
+  End If
+End If
+Set objUser = Nothing
+Wscript.Quit
+ 
+' В скрипте можно обойтись без ручного изменения домена, ведь у запускающего скрипт и у искомого пользователя он один? Вот кусочек вместо третьей строки:
+' set WshNetwork = WScript.CreateObject("WScript.Network")
+' set objWMIService = GetObject("winmgmts:\\.\root\cimv2")
+' strDomain = WshNetwork.User Domain
+
