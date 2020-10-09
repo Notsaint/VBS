@@ -1,3 +1,7 @@
+' Скрипт, который "смотрит" в указанную вами папку и при наличии в ней файлов отправляет письмо с оповещением. 
+' Данный скрипт можно запускать шедулером с определенным интервалом и быть всегда в курсе поступления файлов в интересующую вас папку.
+' http://www.kovanev.net/
+
 Set filesys = CreateObject("Scripting.FileSystemObject")
 ' C:\foldername
 Set DataFolder = filesys.GetFolder("C:\foldername") 
