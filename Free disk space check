@@ -1,0 +1,64 @@
+' Бывает необходимость автоматически отслеживать объем свободного места на том или ином диске и, если этот объем меньше определенного порога, удалять ненужные файлы.
+' Скрипт, который проверяет количество незанятого дискового пространства и в случае, когда оно меньше указанного значения (в данном случае - 4Гб), 
+' удаляет файлы, старше 14-ти дней, из заданной папки. 
+' Это может быть полезно для папки, в которой лежат бэкапы, кол-во которых невозможно ограничить иным способом (например, использовать цикл перезаписи). 
+' Кроме того, скрипт записывает все свои действия в текстовый лог-файл.
+
+path = "C:\backup_folder"
+strOutputFile = "C:\backup_folder\log.txt"
+deldate = date() - 14
+arFiles = Array()
+set fso = createobject("scripting.filesystemobject")
+Set objFileSystem = CreateObject("Scripting.fileSystemObject")
+Set objOutputFile = objFileSystem.OpenTextFile(strOutputFile, 8,true)
+Set Drive = fso.GetDrive("C:")
+ 
+if not Drive.FreeSpace < 4294967296 then
+ 
+SelectFiles path, deldate, arFiles, truenDeleted = 0
+for n = 0 to ubound(arFiles)
+on error resume next
+arFiles(n).delete true
+if err.number <> 0 then
+objOutputFile.WriteLine (now & "   Файл " & arFiles(n).path & " не может быть удален. Скорее всего он открыт в другой программе.")
+objOutputFile.Close
+else
+nDeleted = nDeleted + 1
+end if
+on error goto 0
+next
+ 
+if nDeleted > 0 then objOutputFile.WriteLine (now & "   Было удалено " & nDeleted & " файлов.")
+if nDeleted = 0 then objOutputFile.WriteLine (now & "   Было удалено 0 файлов.")
+objOutputFile.Close
+ 
+else
+objOutputFile.WriteLine (now & "   На диске C достаточно свободного места. Ни одного файла удалено не было.")
+objOutputFile.Close
+end if
+ 
+sub SelectFiles(sPath,vdeldate,arFilesToKill,bIncludeSubFolders)
+on error resume next
+set folder = fso.getfolder(sPath)
+set files = folder.files
+ 
+for each file in files
+dtlastmodified = null
+on error resume Next
+dtlastmodified = file.datelastmodified
+on error goto 0
+if not isnull(dtlastmodified) Then
+if dtlastmodified < vdeldate then
+count = ubound(arFilesToKill) + 1
+redim preserve arFilesToKill(count)
+set arFilesToKill(count) = file
+end if
+end if
+next
+ 
+if bIncludeSubFolders then
+for each fldr in folder.subfolders
+SelectFiles fldr.path,vdeldate,arFilesToKill,true
+next
+end if
+end sub
