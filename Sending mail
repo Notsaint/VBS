@@ -1,3 +1,5 @@
+' http://www.kovanev.net/
+
 Const cdoSendUsingMethod = _ "http://schemas.microsoft.com/cdo/configuration/sendusing"Const cdoSendUsingPort = 2
 Const cdoSMTPServer = _ "http://schemas.microsoft.com/cdo/configuration/smtpserver"
 Const cdoSMTPServerPort = _ "http://schemas.microsoft.com/cdo/configuration/smtpserverport"
