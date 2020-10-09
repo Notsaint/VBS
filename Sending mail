@@ -1,0 +1,49 @@
+Const cdoSendUsingMethod = _ "http://schemas.microsoft.com/cdo/configuration/sendusing"Const cdoSendUsingPort = 2
+Const cdoSMTPServer = _ "http://schemas.microsoft.com/cdo/configuration/smtpserver"
+Const cdoSMTPServerPort = _ "http://schemas.microsoft.com/cdo/configuration/smtpserverport"
+Const cdoSMTPConnectionTimeout = _ "http://schemas.microsoft.com/cdo/configuration/smtpconnectiontimeout"
+Const cdoSMTPAuthenticate = _ "http://schemas.microsoft.com/cdo/configuration/smtpauthenticate"
+Const cdoBasic = 1
+Const cdoSendUserName = _ "http://schemas.microsoft.com/cdo/configuration/sendusername"
+Const cdoSendPassword = _ "http://schemas.microsoft.com/cdo/configuration/sendpassword"
+Dim objConfig ' As CDO.Configuration
+Dim objMessage ' As CDO.Message
+Dim Fields ' As ADODB.Fields
+Set objConfig = CreateObject("CDO.Configuration")
+Set Fields = objConfig.Fields
+
+With Fields
+  .Item(cdoSendUsingMethod) = cdoSendUsingPort
+  .Item(cdoSMTPServer) = "smtp.domain.local" 'адрес smtp-сервера
+  .Item(cdoSMTPServerPort) = 25 'порт
+  .Item(cdoSMTPConnectionTimeout) = 10 'таймаут соединения (кажется, в секундах)
+  .Item(cdoSMTPAuthenticate) = cdoBasic 'Способ аутентификации
+  .Item(cdoSendUserName) ="login" 'логин
+  .Item(cdoSendPassword) ="password" 'пароль
+  .Update
+End With
+
+Set objMessage = CreateObject("CDO.Message")
+Set objMessage.Configuration = objConfig
+
+With objMessage
+  .To = "<recipient@domain.com>" 'кому
+  .From = "Робот-автопосыльный<no-reply@domain.ru>" 'от кого
+  .Subject = "тема сообщения"
+  .HtmlBody = "<html><body>Текст сообщения в формате html</body></html>"
+  .TextBody = "Текст сообщения в формате plain-text"
+  .AddRelatedBodyPart "c:\logo.gif", "logo.gif", 0 'добавить в письмо объект как multipart
+  .AddAttachment "c:\logo2.gif" 'добавить в письмо объект как вложение
+  .Send
+End With
+
+Set Fields = Nothing
+Set objMessage = Nothing
+Set objConfig = Nothing
+
+Если мы отправляем письмо в формате html и хотим, чтобы прямо в нем были картинки, мы можем:
+- вставить картинки как вложения
+либо
+- вставить картинки как multipart
+а затем обратиться к ним тэгом <img src="cid:logo.gif">
+Правильнее вставлять все-таки как multipart (потому что в некоторых клиентах, например в OWA, картинки, вставленные как вложения, не отображаются (видимо, из соображений безопасности))
