@@ -1,0 +1,8 @@
+' Данный скрипт позволит вам узнать логин пользователя по имеющемуся у вас SID. В скрипт необходимо вписать интересующий вас SID.
+
+strComputer = "."
+Set objWMIService = GetObject("winmgmts:\\" & strComputer & "\root\cimv2")
+Set objAccount = objWMIService.Get _
+("Win32_SID.SID='S-1-5-21-590955481-2333844139-4203260567-1008'")
+Wscript.Echo objAccount.AccountName
+Wscript.Echo objAccount.ReferencedDomainName
